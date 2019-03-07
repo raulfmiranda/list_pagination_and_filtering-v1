@@ -18,8 +18,6 @@ FSJS project 2 - List Filter and Pagination
 ***/
 
 
-
-
 /*** 
    Create the `showPage` function to hide all of the items in the 
    list except for the ten you want to show.
@@ -35,7 +33,21 @@ FSJS project 2 - List Filter and Pagination
        "invoke" the function 
 ***/
 
+var students = document.querySelectorAll('body > div > ul > li');
 
+function showPage(students, pageNumber) {
+
+   // Delete all students
+   for (var i = 0; i < students.length; i++) {
+      students[i].style.display = 'none';
+   }
+
+   // Show only selected students
+   // document.querySelector('body > div > ul > li:nth-child(1)').style.display = 'inherit'
+   
+}
+
+showPage(students);
 
 
 /*** 
