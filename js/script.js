@@ -70,3 +70,42 @@ function appendPageLinks() {
 }
 
 appendPageLinks();
+
+// Append input and search button and set button click handler 
+function appendSearch() {
+
+   var header = document.querySelector('body > div > div.page-header.cf');
+
+   // Append search area to search students
+   header.innerHTML += `
+      <div class="student-search">
+         <input placeholder="Search for students...">
+         <button>Search</button>
+      </div>
+   `;
+
+   
+   var searchButton = document.querySelector('body > div > div.page-header.cf > div > button');
+
+   searchButton.addEventListener('click', function() {
+      
+      var students = document.querySelectorAll('body > div > ul > li');
+      var searchInput = document.querySelector('body > div > div.page-header.cf > div > input');
+      var searchWords = searchInput.value;
+
+      for (var i = 0; i < students.length; i++) {
+
+         var studentName = students[i].querySelector('div.student-details > h3').textContent;
+         var studentEmail = students[i].querySelector('div.student-details > span').textContent;
+
+         if (studentName.includes(searchWords) || studentEmail.includes(searchWords)) {
+            students[i].style.display = 'block';
+         } else {
+            students[i].style.display = 'none';
+         }
+      }
+      
+   });
+}
+
+appendSearch();
