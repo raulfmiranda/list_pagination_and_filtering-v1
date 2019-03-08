@@ -9,9 +9,15 @@ var numberStudentPerPage = 10;
 
 // Goes through all students to set them visible or not
 
-function showPage(pageNumber) {
+function showPage(pageNumber, isSearch, searchedStudents) {
 
-   var students = document.querySelectorAll('body > div > ul > li');
+   var students;
+
+   if (isSearch) {
+      students = searchedStudents;
+   } else {
+      students = document.querySelectorAll('body > div > ul > li');
+   }
 
    pageNumber--;
 
@@ -27,13 +33,23 @@ function showPage(pageNumber) {
 
 // Append links to do pagination (1, 2, ...)
 
-function appendPageLinks() {
+function appendPageLinks(isSearch, searchedStudents) {
 
    var page = document.querySelector('.page');
-   var students = document.querySelectorAll('body > div > ul > li');
+   var students;
 
-   // Go to default page = 1
-   showPage(1);
+   if (isSearch) {
+      students = searchedStudents;
+      showPage(1, true, searchedStudents);
+
+      if (searchedStudents.length <= numberStudentPerPage) {
+         return;
+      }
+   } else {
+      students = document.querySelectorAll('body > div > ul > li');
+      // Go to default page = 1
+      showPage(1);
+   }
    
    var paginationHTML = '<div class="pagination"><ul>';
    
@@ -83,29 +99,38 @@ function appendSearch() {
          <button>Search</button>
       </div>
    `;
-
    
    var searchButton = document.querySelector('body > div > div.page-header.cf > div > button');
 
-   searchButton.addEventListener('click', function() {
-      
-      var students = document.querySelectorAll('body > div > ul > li');
-      var searchInput = document.querySelector('body > div > div.page-header.cf > div > input');
-      var searchWords = searchInput.value;
+   searchButton.addEventListener('click', searchButtonHandler);
+}
 
-      for (var i = 0; i < students.length; i++) {
+function searchButtonHandler() {
 
-         var studentName = students[i].querySelector('div.student-details > h3').textContent;
-         var studentEmail = students[i].querySelector('div.student-details > span').textContent;
+   // var students = document.querySelectorAll('body > div > ul > li');
+   var students = document.getElementsByClassName('student-item');
+   var searchInput = document.querySelector('body > div > div.page-header.cf > div > input');
+   var searchWords = searchInput.value.toLowerCase();
+   var studentsSearched = [];
 
-         if (studentName.includes(searchWords) || studentEmail.includes(searchWords)) {
-            students[i].style.display = 'block';
-         } else {
-            students[i].style.display = 'none';
-         }
-      }
-      
-   });
+   for (var i = 0; i < students.length; i++) {
+
+      var studentName = students[i].querySelector('div.student-details > h3').textContent.toLowerCase();
+      var studentEmail = students[i].querySelector('div.student-details > span').textContent.toLowerCase();
+
+      if (studentName.includes(searchWords) || studentEmail.includes(searchWords)) {            
+         studentsSearched.push(students[i]);
+      } 
+
+      students[i].style.display = 'none';
+   }
+
+   var pagination = document.querySelector('body > div > div.pagination');
+   if (pagination) {
+      pagination.remove();
+   }
+
+   appendPageLinks(true, studentsSearched);
 }
 
 appendSearch();
