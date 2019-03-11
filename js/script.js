@@ -5,7 +5,7 @@ FSJS project 2 - List Filter and Pagination
    
 // Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
-var numberStudentPerPage = 10;
+var numberStudentPerPage = 5;
 
 // Goes through all students to set them visible or not
 
@@ -40,6 +40,7 @@ function appendPageLinks(isSearch, searchedStudents) {
 
    if (isSearch) {
       students = searchedStudents;
+      // Go to default page = 1
       showPage(1, true, searchedStudents);
 
       if (searchedStudents.length <= numberStudentPerPage) {
@@ -80,7 +81,12 @@ function appendPageLinks(isSearch, searchedStudents) {
          
          clickedLink.classList.add("active");
          let pageNumber = parseInt(clickedLink.textContent);
-         showPage(pageNumber);
+
+         if (isSearch) {
+            showPage(pageNumber, true, searchedStudents);
+         } else {
+            showPage(pageNumber);
+         }
       });
    }
 }
@@ -101,30 +107,36 @@ function appendSearch() {
    `;
    
    var searchButton = document.querySelector('body > div > div.page-header.cf > div > button');
+   var searchInput = document.querySelector('body > div > div.page-header.cf > div > input');
 
    searchButton.addEventListener('click', searchButtonHandler);
+   searchInput.addEventListener('keyup', function(e) {
+      if (e.keyCode == 13) {
+         searchButtonHandler();
+      }
+   });
 }
 
 function searchButtonHandler() {
-
+   
    // var students = document.querySelectorAll('body > div > ul > li');
    var students = document.getElementsByClassName('student-item');
    var searchInput = document.querySelector('body > div > div.page-header.cf > div > input');
    var searchWords = searchInput.value.toLowerCase();
    var studentsSearched = [];
-
+   
    for (var i = 0; i < students.length; i++) {
-
+      
       var studentName = students[i].querySelector('div.student-details > h3').textContent.toLowerCase();
       var studentEmail = students[i].querySelector('div.student-details > span').textContent.toLowerCase();
-
+      
       if (studentName.includes(searchWords) || studentEmail.includes(searchWords)) {            
          studentsSearched.push(students[i]);
       } 
-
+      
       students[i].style.display = 'none';
    }
-
+   
    var pagination = document.querySelector('body > div > div.pagination');
    if (pagination) {
       pagination.remove();
